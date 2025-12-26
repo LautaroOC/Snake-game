@@ -91,27 +91,14 @@ public class Snake {
                         coordinateY.set(i, lastCoordinateY);
                         lastCoordinateX= beforeCoordinateX;
                         lastCoordinateY = beforeCoordinateY;
+                        moveState = true;
                     }
                 }
             }
-            moveState = true;
         }
        else {
            lastMoveTime = System.nanoTime();
         }
-    }
-
-    public void moveUp() {
-        move();
-    }
-    public void moveDown () {
-        move();
-    }
-    public void moveLeft() {
-        move();
-    }
-    public void moveRight() {
-        move();
     }
 
     public void checkBorderCollision() {
@@ -136,12 +123,17 @@ public class Snake {
         grow(spawnCoordX,spawnCoordY,3);
         currentHorizontalDirection = 0;
         currentVerticalDirection = 0;
+        moveState = false;
     }
 
     public void checkDirection(int horizontalDirection, int verticalDirection) {
 
         System.out.println("horizontal " + horizontalDirection + "    vertical : " + verticalDirection);
         System.out.println("currenthorizontal " + currentHorizontalDirection + "    currentvertical : " + currentVerticalDirection);
+
+        if (!moveState && horizontalDirection == -1){
+            horizontalDirection = 0;
+        }
 
         if ((currentHorizontalDirection == 1 && horizontalDirection == -1) || (currentHorizontalDirection == -1 && horizontalDirection == 1)) {
             System.out.println("la horizontal y la currenthorizontal son opuestas");
