@@ -5,13 +5,14 @@ public class Game {
     private int windowHeight;
     private int squareHeight;
     private int squareWidth;
-    Snake snake = new Snake( 80,300,20,20, 3);
+    Snake snake;
 
     public Game(int windowWidth, int windowHeight, int squareWidth, int squareHeight) {
         this.windowHeight = windowHeight;
         this.windowWidth = windowWidth;
         this.squareWidth = squareWidth;
         this.squareHeight = squareHeight;
+        snake = new Snake( 20,20, 3, windowWidth, windowHeight);
     }
 
     public void draw(Graphics g) {

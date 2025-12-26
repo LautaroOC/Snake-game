@@ -6,26 +6,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Snake {
+    private int spawnCoordX = 80;
+    private int spawnCoordY = 300;
     private int width;
     private int height;
-    private int coordXSpawn;
-    private int coordYSpawn;
     private int arcwidth = 20;
     private int archeight = 11;
     private int tailSpaces = 2;
-    private int lastCoordinateX = 0;
-    private int lastCoordinateY = 0;
     private ArrayList<Integer> coordinateX;
     private ArrayList<Integer> coordinateY;
+    private long lastMoveTime;
+    private int windowWidth;
+    private int windowHeight;
+    private boolean moveState = false;
+    private int currentHorizontalDirection;
+    private int currentVerticalDirection;
 
-    public Snake(int coordX, int coordY, int width, int height, int snakeSize) {
-       this.coordXSpawn = coordX;
-       this.coordYSpawn= coordY;
+    public Snake(int width, int height, int snakeSize, int windowWidth, int windowHeight) {
        this.width = width;
        this.height= height;
+       this.windowWidth = windowWidth;
+       this.windowHeight = windowHeight;
        coordinateX = new ArrayList<>();
        coordinateY = new ArrayList<>();
-       grow(coordXSpawn, coordYSpawn,snakeSize);
+       grow(spawnCoordX, spawnCoordY,snakeSize);
     }
 
     public Snake getSnake() {
@@ -34,6 +38,8 @@ public class Snake {
 
 
     public void grow(int coordXSpawn, int coordYSpawn, int grow) {
+        int lastCoordinateX = 0;
+        int lastCoordinateY = 0;
         for (int i = 0; i < grow; i++) {
             if (coordinateX.isEmpty() && coordinateY.isEmpty()) {
                 coordinateX.add(i, coordXSpawn);
@@ -43,62 +49,121 @@ public class Snake {
             } else {
                 coordinateX.add(i, lastCoordinateX);
                 coordinateY.add(i, lastCoordinateY);
-                //coordinateY.add(lastCoordinateY + tailSpaces + width);
 
                 lastCoordinateX = coordinateX.get(i) - width;
                 lastCoordinateY = lastCoordinateY;
-                //lastCoordinateY = coordinateY.get(coordinateY.size() -1);
             }
         }
     }
 
-    int lastcordx = 0;
-    int lastlastcordx = 0;
-    int lastlastlastcordx = 0;
-    int lastcordy = 0;
     public void move() {
-        int beforecord = 0;
-        //se mueve hacia la derecha
-        //la cabeza se mueve primero hacia la derecha que seria posicion 0 + tailspaces + width
-        //la cola sigue a la cabeza por lo tanto las demas posiciones = la ultima posicion 0
-        for (int i = 0; i < coordinateX.size(); i++) {
-            System.out.println(coordinateX.get(i));
-            if (i == 0) {
-                lastcordx = coordinateX.get(i);
-                lastcordy = coordinateY.get(i);
-                coordinateX.set(i, lastcordx + width);
+        long snakeTimer = 100_000_000L;
+        int lastCoordinateX = 0;
+        int lastCoordinateY = 0;
+        int beforeCoordinateX = 0;
+        int beforeCoordinateY = 0;
+
+        if (coordinateX.isEmpty())  {
+            return;
+        }
+        if (lastMoveTime > 0) {
+            long timeNow = System.nanoTime() - lastMoveTime;
+            if (timeNow < snakeTimer) {
+                return;
             }
-            else{
-                //lastlastcordx = coordinateX.get(i - 1);
-                //lastcordx = coordinateX.get(i-1);
-                //coordinateX.set(i, lastcordx-width);
-                beforecord = coordinateX.get(i);
-                coordinateX.set(i, lastcordx);
-                lastcordx = beforecord;
+            lastMoveTime += snakeTimer;
+            int newCoordinateX = 0;
+            int newCoordinateY = 0;
+            for (int i = 0; i < coordinateX.size(); i++) {
+                if (i == 0) {
+                    lastCoordinateX= coordinateX.get(i);
+                    lastCoordinateY = coordinateY.get(i);
+                    coordinateX.set(i, lastCoordinateX + (currentHorizontalDirection * width));
+                    coordinateY.set(i, lastCoordinateY + (currentVerticalDirection * width));
+                    newCoordinateX = coordinateX.get(i);
+                    newCoordinateY = coordinateY.get(i);
+                }
+                else {
+                    if ((newCoordinateX != lastCoordinateX) || (newCoordinateY != lastCoordinateY)){
+                        beforeCoordinateX = coordinateX.get(i);
+                        beforeCoordinateY = coordinateY.get(i);
+                        coordinateX.set(i, lastCoordinateX);
+                        coordinateY.set(i, lastCoordinateY);
+                        lastCoordinateX= beforeCoordinateX;
+                        lastCoordinateY = beforeCoordinateY;
+                    }
+                }
             }
+            moveState = true;
+        }
+       else {
+           lastMoveTime = System.nanoTime();
         }
     }
 
     public void moveUp() {
-        //la cabeza se mueve las demas partes lo siguen
-        // por lo tanto la cabeza osea la posicion 0 debe de actualizar a una nueva posicion.
-        //la nueva posicion va a ser y + tailspaces + width
-        //coordinateY.set(0, coordinateY.get(0) + tailSpaces + width);
-
+        move();
     }
     public void moveDown () {
-
+        move();
     }
     public void moveLeft() {
-
+        move();
     }
     public void moveRight() {
+        move();
+    }
+
+    public void checkBorderCollision() {
+        if (coordinateX.isEmpty()) {
+            return;
+        }
+        if ((coordinateX.get(0) < 0) || (coordinateX.get(0) >= windowWidth)) {
+           coordinateX.clear();
+           coordinateY.clear();
+           System.out.println("Perdiste pana");
+            resetSnake();
+        }
+        else if ((coordinateY.get(0) < 0) || (coordinateY.get(0) >= windowHeight)) {
+           coordinateX.clear();
+           coordinateY.clear();
+           System.out.println("Perdiste pana");
+           resetSnake();
+        }
+    }
+
+    public void resetSnake() {
+        grow(spawnCoordX,spawnCoordY,3);
+        currentHorizontalDirection = 0;
+        currentVerticalDirection = 0;
+    }
+
+    public void checkDirection(int horizontalDirection, int verticalDirection) {
+
+        System.out.println("horizontal " + horizontalDirection + "    vertical : " + verticalDirection);
+        System.out.println("currenthorizontal " + currentHorizontalDirection + "    currentvertical : " + currentVerticalDirection);
+
+        if ((currentHorizontalDirection == 1 && horizontalDirection == -1) || (currentHorizontalDirection == -1 && horizontalDirection == 1)) {
+            System.out.println("la horizontal y la currenthorizontal son opuestas");
+        }
+        else if ((currentVerticalDirection == 1 && verticalDirection == -1) || (currentVerticalDirection == -1 && verticalDirection == 1)) {
+            System.out.println("la vertical la currentvertical son opuestas");
+        }
+        else {
+            if (horizontalDirection != 0 || verticalDirection != 0 ) {
+                currentHorizontalDirection = horizontalDirection;
+                currentVerticalDirection = verticalDirection;
+            }
+        }
 
     }
 
     public void paint(Graphics g){
 
         g.setColor(Color.GREEN);
+        if (coordinateX.isEmpty()) {
+            return;
+        }
         for (int i = 0; i < coordinateX.size(); i++) {
             int x = coordinateX.get(i);
             int y = coordinateY.get(i);

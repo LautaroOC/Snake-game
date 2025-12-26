@@ -9,6 +9,7 @@ public class DrawComponents extends JPanel implements Runnable {
     private Game game;
     private Thread gameThread;
     private int keyState;
+    private long lastMoveTime ;
 
     public DrawComponents(int windowWidth, int windowHeight) {
 
@@ -29,6 +30,7 @@ public class DrawComponents extends JPanel implements Runnable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 keyState = 2;
+                System.out.println("A");
             }
         };
 
@@ -36,12 +38,14 @@ public class DrawComponents extends JPanel implements Runnable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 keyState = 1;
+                System.out.println("D");
             }
         };
         Action pressedWAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 keyState = 3;
+                System.out.println("W");
             }
         };
 
@@ -49,6 +53,7 @@ public class DrawComponents extends JPanel implements Runnable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 keyState = 4;
+                System.out.println("S");
             }
         };
         Action releasedAction = new AbstractAction() {
@@ -76,30 +81,54 @@ public class DrawComponents extends JPanel implements Runnable {
         this.getActionMap().put("SPressed", pressedSAction);
         this.getActionMap().put("SReleased", releasedAction);
 
+        int horizontalDirection =  0;
+        int verticalDirection = 0;
+
         while(true) {
 
-            game.snake.move();
-
             switch (keyState) {
+                case 0:
+                    horizontalDirection = 0;
+                    verticalDirection = 0;
+                    break;
                 case 1:
-                    game.snake.moveRight();
+                    game.snake.move();
+                    horizontalDirection = 1;
+                    verticalDirection = 0;
                     break;
                 case 2:
-                    game.snake.moveLeft();
+                    game.snake.move();
+                    horizontalDirection = -1;
+                    verticalDirection = 0;
                     break;
                 case 3:
-                    game.snake.moveUp();
+                    game.snake.move();
+                    horizontalDirection = 0;
+                    verticalDirection = -1;
                     break;
                 case 4:
-                    game.snake.moveDown();
+                    game.snake.move();
+                    horizontalDirection = 0;
+                    verticalDirection = 1;
                     break;
             }
 
+            System.out.println("horizontal " + horizontalDirection);
+            game.snake.checkDirection(horizontalDirection, verticalDirection);
+
+            game.snake.move();
+
+            if(horizontalDirection != 0 || verticalDirection != 0) {
+
+              //  game.snake.move();
+            }
+
+            game.snake.checkBorderCollision();
+
             repaint();
             try {
-                Thread.sleep(1000);
+                Thread.sleep(40);
             } catch (InterruptedException e) {
-                System.out.println("Se interrumpio el hilo");
             }
         }
     }
@@ -108,6 +137,5 @@ public class DrawComponents extends JPanel implements Runnable {
         super.paintComponent(g);
         game.draw(g);
         game.snake.paint(g);
-
     }
 }
