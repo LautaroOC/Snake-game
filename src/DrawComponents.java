@@ -113,17 +113,16 @@ public class DrawComponents extends JPanel implements Runnable {
                     break;
             }
 
-            System.out.println("horizontal " + horizontalDirection);
             game.snake.checkDirection(horizontalDirection, verticalDirection);
 
             game.snake.move();
 
-            if(horizontalDirection != 0 || verticalDirection != 0) {
-
-              //  game.snake.move();
-            }
-
             game.snake.checkBorderCollision();
+
+            game.food.createFood();
+
+            game.food.resetFood();
+
 
             repaint();
             try {
@@ -137,5 +136,6 @@ public class DrawComponents extends JPanel implements Runnable {
         super.paintComponent(g);
         game.draw(g);
         game.snake.paint(g);
+        game.food.draw(g);
     }
 }

@@ -14,8 +14,8 @@ public class Main {
     }
 
     public static void DrawWindow(){
-        int windowHeight = 600;
-        int windowWidth = 600;
+        int windowHeight = 400;
+        int windowWidth = 400;
 
         JFrame frame = new JFrame("Snake Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

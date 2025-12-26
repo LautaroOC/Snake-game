@@ -6,6 +6,7 @@ public class Game {
     private int squareHeight;
     private int squareWidth;
     Snake snake;
+    Food food;
 
     public Game(int windowWidth, int windowHeight, int squareWidth, int squareHeight) {
         this.windowHeight = windowHeight;
@@ -13,6 +14,7 @@ public class Game {
         this.squareWidth = squareWidth;
         this.squareHeight = squareHeight;
         snake = new Snake( 20,20, 3, windowWidth, windowHeight);
+        food = new Food(20,20,windowWidth,windowHeight, snake);
     }
 
     public void draw(Graphics g) {

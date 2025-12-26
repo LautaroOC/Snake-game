@@ -3,6 +3,7 @@ import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class Snake {
@@ -21,6 +22,7 @@ public class Snake {
     private boolean moveState = false;
     private int currentHorizontalDirection;
     private int currentVerticalDirection;
+    private boolean growFirstCall = false;
 
     public Snake(int width, int height, int snakeSize, int windowWidth, int windowHeight) {
        this.width = width;
@@ -37,23 +39,30 @@ public class Snake {
     }
 
 
-    public void grow(int coordXSpawn, int coordYSpawn, int grow) {
+    public void grow(int coordinateXSpawn, int coordinateYSpawn, int grow) {
         int lastCoordinateX = 0;
         int lastCoordinateY = 0;
         for (int i = 0; i < grow; i++) {
-            if (coordinateX.isEmpty() && coordinateY.isEmpty()) {
-                coordinateX.add(i, coordXSpawn);
-                coordinateY.add(i, coordYSpawn);
-                lastCoordinateX = coordXSpawn - width;
-                lastCoordinateY = coordYSpawn;
-            } else {
-                coordinateX.add(i, lastCoordinateX);
-                coordinateY.add(i, lastCoordinateY);
+            if (!growFirstCall) {
+                if (coordinateX.isEmpty() && coordinateY.isEmpty()) {
+                    coordinateX.add(i, coordinateXSpawn);
+                    coordinateY.add(i, coordinateYSpawn);
+                    lastCoordinateX = coordinateXSpawn - width;
+                    lastCoordinateY = coordinateYSpawn;
+                } else {
+                    coordinateX.add(i, lastCoordinateX);
+                    coordinateY.add(i, lastCoordinateY);
 
-                lastCoordinateX = coordinateX.get(i) - width;
-                lastCoordinateY = lastCoordinateY;
+                    lastCoordinateX = coordinateX.get(i) - width;
+                    lastCoordinateY = lastCoordinateY;
+                }
+            }
+            else {
+                coordinateX.add(coordinateX.size(), coordinateXSpawn);
+                coordinateY.add(coordinateY.size(), coordinateYSpawn);
             }
         }
+        growFirstCall = true;
     }
 
     public void move() {
@@ -120,6 +129,7 @@ public class Snake {
     }
 
     public void resetSnake() {
+        growFirstCall = false;
         grow(spawnCoordX,spawnCoordY,3);
         currentHorizontalDirection = 0;
         currentVerticalDirection = 0;
@@ -127,10 +137,6 @@ public class Snake {
     }
 
     public void checkDirection(int horizontalDirection, int verticalDirection) {
-
-        System.out.println("horizontal " + horizontalDirection + "    vertical : " + verticalDirection);
-        System.out.println("currenthorizontal " + currentHorizontalDirection + "    currentvertical : " + currentVerticalDirection);
-
         if (!moveState && horizontalDirection == -1){
             horizontalDirection = 0;
         }
@@ -147,7 +153,38 @@ public class Snake {
                 currentVerticalDirection = verticalDirection;
             }
         }
+    }
 
+    public ArrayList<Integer> getColumns() {
+        ArrayList<Integer> columns = new ArrayList<>();
+
+       for(int i = 0; i < coordinateX.size(); i++)  {
+          int element = coordinateX.get(i) / width;
+          columns.add(element);
+       }
+
+        return columns;
+    }
+
+    public ArrayList<Integer> getRows() {
+        ArrayList<Integer> rows = new ArrayList<>();
+
+        for (int i = 0; i < coordinateY.size(); i++)  {
+            int element = coordinateY.get(i) / height;
+            rows.add(element);
+        }
+        return rows;
+    }
+
+    public boolean eatFood(int coordinateXFood, int coordinateYFood) {
+      if (coordinateX.get(0) == coordinateXFood && coordinateY.get(0) == coordinateYFood)  {
+         System.out.println("SE HA COMIDO LA COMIDA");
+         grow( (coordinateX.get(coordinateX.size()-1)), (coordinateY.get(coordinateY.size()-1)), 1);
+         return true;
+      }
+      else {
+          return false;
+      }
     }
 
     public void paint(Graphics g){
