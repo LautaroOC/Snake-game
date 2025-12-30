@@ -13,7 +13,7 @@ public class Game {
         this.windowWidth = windowWidth;
         this.squareWidth = squareWidth;
         this.squareHeight = squareHeight;
-        snake = new Snake( 20,20, 3, windowWidth, windowHeight);
+        snake = new Snake( 20,20, 40, windowWidth, windowHeight);
         food = new Food(20,20,windowWidth,windowHeight, snake);
     }
 

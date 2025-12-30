@@ -13,7 +13,6 @@ public class Snake {
     private int height;
     private int arcwidth = 20;
     private int archeight = 11;
-    private int tailSpaces = 2;
     private ArrayList<Integer> coordinateX;
     private ArrayList<Integer> coordinateY;
     private long lastMoveTime;
@@ -65,6 +64,7 @@ public class Snake {
         growFirstCall = true;
     }
 
+    //dont really know if this is the best solution mainly because of all the conditions it has for it to move, it doesn't feel completely abstracted. But it works.
     public void move() {
         long snakeTimer = 100_000_000L;
         int lastCoordinateX = 0;
@@ -92,7 +92,7 @@ public class Snake {
                     newCoordinateX = coordinateX.get(i);
                     newCoordinateY = coordinateY.get(i);
                 }
-                else {
+                else if (!moveState){
                     if ((newCoordinateX != lastCoordinateX) || (newCoordinateY != lastCoordinateY)){
                         beforeCoordinateX = coordinateX.get(i);
                         beforeCoordinateY = coordinateY.get(i);
@@ -102,6 +102,14 @@ public class Snake {
                         lastCoordinateY = beforeCoordinateY;
                         moveState = true;
                     }
+                }
+                else {
+                    beforeCoordinateX = coordinateX.get(i);
+                    beforeCoordinateY = coordinateY.get(i);
+                    coordinateX.set(i, lastCoordinateX);
+                    coordinateY.set(i, lastCoordinateY);
+                    lastCoordinateX= beforeCoordinateX;
+                    lastCoordinateY = beforeCoordinateY;
                 }
             }
         }
@@ -115,20 +123,18 @@ public class Snake {
             return;
         }
         if ((coordinateX.get(0) < 0) || (coordinateX.get(0) >= windowWidth)) {
-           coordinateX.clear();
-           coordinateY.clear();
            System.out.println("Perdiste pana");
             resetSnake();
         }
         else if ((coordinateY.get(0) < 0) || (coordinateY.get(0) >= windowHeight)) {
-           coordinateX.clear();
-           coordinateY.clear();
            System.out.println("Perdiste pana");
            resetSnake();
         }
     }
 
     public void resetSnake() {
+        coordinateX.clear();
+        coordinateY.clear();
         growFirstCall = false;
         grow(spawnCoordX,spawnCoordY,3);
         currentHorizontalDirection = 0;
@@ -152,6 +158,22 @@ public class Snake {
                 currentHorizontalDirection = horizontalDirection;
                 currentVerticalDirection = verticalDirection;
             }
+        }
+    }
+
+    //I dont really know if this is the best solution but it works.
+    public void checkSelfCollision() {
+        int headForX = coordinateX.getFirst() / width;
+        int headForY = coordinateY.getFirst() / height;
+
+        for (int i = 1; i < getColumns().size(); i ++) {
+
+            if ((headForX == getColumns().get(i)) && (headForY == getRows().get(i))) {
+                System.out.println("self colissin");
+                resetSnake();
+                return;
+            }
+
         }
     }
 

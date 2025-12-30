@@ -92,22 +92,18 @@ public class DrawComponents extends JPanel implements Runnable {
                     verticalDirection = 0;
                     break;
                 case 1:
-                    game.snake.move();
                     horizontalDirection = 1;
                     verticalDirection = 0;
                     break;
                 case 2:
-                    game.snake.move();
                     horizontalDirection = -1;
                     verticalDirection = 0;
                     break;
                 case 3:
-                    game.snake.move();
                     horizontalDirection = 0;
                     verticalDirection = -1;
                     break;
                 case 4:
-                    game.snake.move();
                     horizontalDirection = 0;
                     verticalDirection = 1;
                     break;
@@ -118,10 +114,12 @@ public class DrawComponents extends JPanel implements Runnable {
             game.snake.move();
 
             game.snake.checkBorderCollision();
+            game.snake.checkSelfCollision();
 
             game.food.createFood();
 
             game.food.resetFood();
+
 
 
             repaint();
