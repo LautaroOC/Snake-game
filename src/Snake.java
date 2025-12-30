@@ -13,6 +13,8 @@ public class Snake {
     private int height;
     private int arcwidth = 20;
     private int archeight = 11;
+    private int score = 0;
+    private int highestScore = 0;
     private ArrayList<Integer> coordinateX;
     private ArrayList<Integer> coordinateY;
     private long lastMoveTime;
@@ -140,6 +142,7 @@ public class Snake {
         currentHorizontalDirection = 0;
         currentVerticalDirection = 0;
         moveState = false;
+        score = 0;
     }
 
     public void checkDirection(int horizontalDirection, int verticalDirection) {
@@ -200,8 +203,9 @@ public class Snake {
 
     public boolean eatFood(int coordinateXFood, int coordinateYFood) {
       if (coordinateX.get(0) == coordinateXFood && coordinateY.get(0) == coordinateYFood)  {
-         System.out.println("SE HA COMIDO LA COMIDA");
          grow( (coordinateX.get(coordinateX.size()-1)), (coordinateY.get(coordinateY.size()-1)), 1);
+         score += 1;
+         checkHighestScore();
          return true;
       }
       else {
@@ -209,13 +213,31 @@ public class Snake {
       }
     }
 
+    public void checkHighestScore() {
+        if (score > highestScore) {
+            highestScore = score;
+        }
+    }
+
+    public String getScore(){
+       return Integer.toString(score);
+    }
+
+    public String getHighestScore() {
+        return Integer.toString(highestScore);
+    }
+
     public void paint(Graphics g){
 
-        g.setColor(Color.GREEN);
         if (coordinateX.isEmpty()) {
             return;
         }
-        for (int i = 0; i < coordinateX.size(); i++) {
+
+        g.setColor(new Color(144, 238, 144)); // light green
+        g.fillRoundRect(coordinateX.getFirst(),coordinateY.getFirst(), width,height,arcwidth,archeight);
+
+        g.setColor(Color.GREEN);
+        for (int i = 1; i < coordinateX.size(); i++) {
             int x = coordinateX.get(i);
             int y = coordinateY.get(i);
             g.fillRoundRect(x,y,width,height, arcwidth,archeight);
