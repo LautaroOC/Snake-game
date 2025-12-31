@@ -5,10 +5,10 @@ public class Game {
     private int windowHeight;
     private int squareHeight;
     private int squareWidth;
-    private int scoreCoordinateX = 310;
-    private int scoreCoordinateY = 20;
-    private int highestScoreCoordinateX = 310;
-    private int highestScoreCoordinateY = 40;
+    private int scoreCoordinateX;
+    private int scoreCoordinateY;
+    private int highestScoreCoordinateX;
+    private int highestScoreCoordinateY;
     Snake snake;
     Food food;
 
@@ -17,8 +17,12 @@ public class Game {
         this.windowWidth = windowWidth;
         this.squareWidth = squareWidth;
         this.squareHeight = squareHeight;
-        snake = new Snake( 20,20, 40, windowWidth, windowHeight);
+        snake = new Snake( 20,20, 3, windowWidth, windowHeight);
         food = new Food(20,20,windowWidth,windowHeight, snake);
+        scoreCoordinateX = windowWidth - 80;
+        scoreCoordinateY = 20;
+        highestScoreCoordinateX = scoreCoordinateX;
+        highestScoreCoordinateY = scoreCoordinateY * 2;
     }
 
     public void draw(Graphics g) {
